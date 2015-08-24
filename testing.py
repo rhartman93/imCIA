@@ -1,5 +1,9 @@
 import pygame
 
+#Idea for text
+#gameWindow will have a writer to write menus and such
+#characters will have their own writers to write their speech relative to their location?
+
 gameObjects = []
 WINDOW_WIDTH = 1280
 WINDOW_HEIGHT = 720
@@ -7,8 +11,12 @@ WINDOW_HEIGHT = 720
 class gameWindow(object):
     def __init__(self, width, height):
         #Setup Drawing Screen
-        self.screen = pygame.display.set_mode((width, height))    
-        
+        self.screen = pygame.display.set_mode((width, height))
+        self.font = pygame.font.SysFont("monospace,arial", 15)
+
+    def write(self, text):
+        speech = self.font.render(text, 1, (255, 0, 0))
+        self.screen.blit(speech, (WINDOW_WIDTH/2, 3 * ( WINDOW_HEIGHT / 4)))
         
         
         
@@ -47,12 +55,19 @@ def main():
 
     game = gameWindow(WINDOW_WIDTH, WINDOW_HEIGHT)
 
+    clock = pygame.time.Clock()
+
     #Are we in game?
     done = False
 
     #Define Objects
     gameObjects.append(character(game, pic="cia1.png"))
+
+    #Using to queue cia slide in
     ciaEnter=False
+
+    #Using to display text
+    talking = False
     
     while not done:
         for event in pygame.event.get():
@@ -77,10 +92,13 @@ def main():
         #Then maybe modifying move or something
         #Can't have a loop in the member function because
         #it will hault the rest of the game
-        
+
+               
         if ciaEnter:
             if gameObjects[0].rect.centerx >= WINDOW_WIDTH/2:
                 ciaEnter = False
+                talking = True
+
             else:
                 gameObjects[0].move(1, 0)
 
@@ -89,9 +107,15 @@ def main():
                        
         for obj in gameObjects:
             obj.draw()
+            
+        if talking:
+            game.write("I'm CIA")
 
         #Flip buffers
-        pygame.display.flip()    
+        pygame.display.flip()
+        
+        #Maintain 60 FPS
+        clock.tick(60)
         
         
     
